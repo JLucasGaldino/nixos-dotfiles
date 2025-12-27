@@ -12,6 +12,12 @@ let
     emacs = "emacs";
     doom = "doom";
   };
+  rebuild_script = pkgs.writeShellApplication {
+    name = "rebuild";
+    text = ''
+    sudo nixos-rebuild switch --flake ~/nixos-dotfiles#nixie
+    '';
+  };
 in
 { 
   home.username = "lucas";
@@ -58,5 +64,6 @@ in
     swaynotificationcenter
     libnotify
     thunderbird
+    rebuild_script
   ];
 }
