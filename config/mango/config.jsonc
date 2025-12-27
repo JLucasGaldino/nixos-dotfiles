@@ -1,0 +1,119 @@
+// -*- mode: jsonc -*-
+{
+    "layer": "top", 
+    "position": "top", 
+    "height": 30, 
+    "margin-left": 15,
+    "margin-right": 15,
+    "margin-top": 15,
+    "margin-bottom": 0,
+    "spacing": 4, 
+
+    // Choose the order of the modules
+    "modules-left": [
+        "ext/workspaces",
+        "custom/sep",
+        "dwl/window",
+    ],
+    "modules-center": [
+        "clock",
+    ],
+
+    "modules-right": [
+        "network",
+        "custom/sep",
+        "pulseaudio",
+        "custom/sep",
+        "cpu",
+        "custom/sep",
+        "memory",
+        "custom/sep",
+        "battery",
+        "custom/sep",
+        "custom/notification",
+        "custom/sep",
+        "tray"
+    ],
+
+    // Modules configuration
+    "ext/workspaces": {
+	    "format": "{icon}",
+	    "on-click": "activate",
+	    "on-click-right": "deactivate",
+        "format-icons":  {
+            "active": "",
+            "default": ""
+        },
+    },
+    "dwl/window" : {
+	    "format": "[{layout}] {title}",
+        "max-length": 50
+    },
+    "pulseaudio" : { 
+        "format": " {volume}"
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10
+        // "icons": {
+        //   "blueman": "bluetooth",
+        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+        // }
+    },
+    "clock": {
+        "format": "{:%Y-%m-%d %H:%M}"
+    },
+    "cpu": {
+        "format": " {usage}",
+        "tooltip": false
+    },
+    "memory": {
+        "format": " {percentage}"
+    },
+    "disk": {
+        "interval": 60,
+        "path": "/",
+        "format": "Disk: {free}"
+    },
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}",
+        "format-plugged": "{capacity}% ",
+        "format-time": "{H}:{M}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "network": {
+        "format": "󰤨 {signalStrength}",
+        "format-disconnected": "󰤫",
+        "on-click": "connrofi",
+    },
+    "custom/sep": {
+        "format" : "|",
+        "interval" : 0
+    },
+    "custom/notification": {
+        "tooltip": true,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "󱅫",
+            "none": "󰂜",
+            "dnd-notification": "󰂠",
+            "dnd-none": "󰪓",
+            "inhibited-notification": "󰂛",
+            "inhibited-none": "󰪑",
+            "dnd-inhibited-notification": "󰂛",
+            "dnd-inhibited-none": "󰪑"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    }
+}
+
