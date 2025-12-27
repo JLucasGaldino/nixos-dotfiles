@@ -22,7 +22,16 @@ in
 { 
   home.username = "lucas";
   home.homeDirectory = "/home/lucas";
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    settings = {
+      user = {
+        name = "JLucasGaldino";
+        email = "lucasgaldino@tuta.io";
+      };
+      init.defaultBranch = "main";
+    };
+  };
   home.stateVersion = "25.11";
   programs.bash = {
     enable = true;
