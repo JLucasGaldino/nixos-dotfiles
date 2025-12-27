@@ -18,6 +18,28 @@ let
     sudo nixos-rebuild switch --flake ~/nixos-dotfiles#nixie
     '';
   };
+  pdf_page_count_in_dir_script = pkgs.writeShellApplication {
+    name = "pdf_page_count_in_dir";
+    text = ''
+      #!/usr/bin/env bash
+      # Directory to search for PDF files (default is current directory)
+      dir="''${1:-.}"
+      # Initialize a variable to hold the total page count
+      total_pages=0
+      # Loop through all PDFs in the specified directory
+      for pdf in "$dir"/*.pdf; do
+          # Check if the file exists (in case no PDFs are found)
+          if [[ -f "$pdf" ]]; then
+              # Get the number of pages in the PDF using pdfinfo
+              pages=$(${pkgs.poppler-utils}/bin/pdfinfo "$pdf" | grep "Pages" | awk '{print $2}')
+              # Add the pages to the total count
+              total_pages=$((total_pages + pages))
+          fi
+      done
+      # Output the total number of pages
+      echo "$total_pages"
+    '';
+  };
 in
 { 
   home.username = "lucas";
@@ -74,5 +96,7 @@ in
     libnotify
     thunderbird
     rebuild_script
+    poppler-utils
+    pdf_page_count_in_dir_script
   ];
 }
