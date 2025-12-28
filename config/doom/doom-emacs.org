@@ -135,7 +135,7 @@ For completion, the packages used were taken from [[https://lambdaland.org/posts
        ;;prodigy           ; FIXME managing external services & code builders
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
-       ;;tree-sitter       ; syntax and parsing, sitting in a tree...
+       tree-sitter       ; syntax and parsing, sitting in a tree...
        ;;upload            ; map local to remote projects via ssh/ftp
 #+end_src
 ** OS
@@ -185,7 +185,7 @@ For completion, the packages used were taken from [[https://lambdaland.org/posts
        lua               ; one-based indices? one-based indices
        markdown          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       nix               ; I hereby declare "nix geht mehr!"
+       (nix +tree-sitter)               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org +roam2 +present +dragndrop)              ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
@@ -201,7 +201,7 @@ For completion, the packages used were taken from [[https://lambdaland.org/posts
        rust       ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        ;;scala             ; java, but good
        ;;(scheme +guile)   ; a fully conniving family of lisps
-       sh                ; she sells {ba,z,fi}sh shells on the C xor
+       (sh +tree-sitter)                ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
@@ -884,6 +884,8 @@ A nice command manager and executor for projects
   (add-to-list 'eglot-server-programs
                '(typst-ts-mode . ("tinymist")))
   (add-to-list 'eglot-server-programs
+               '(nix-mode . ("nixd")))
+  (add-to-list 'eglot-server-programs
                '(astro-mode . ("astro-ls" "--stdio"
                                :initializationOptions
                                (:typescript (:tsdk "./node_modules/typescript/lib"))))))
@@ -930,8 +932,22 @@ A nice command manager and executor for projects
          (choice (completing-read "select an option: " options nil t)))
     (async-shell-command (concat (shell-quote-argument script-path) " " choice))))
 
+(defun nix-expand-attribute ()
+  "Convert foo.bar = value; to foo = { bar = value; };"
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (when (re-search-forward "\\(.*\\)\\.\\([^ ]+\\) = \\(.*\\);" (line-end-position) t)
+      (let ((prefix (match-string 1))
+            (attr (match-string 2))
+            (value (match-string 3))
+            (start-pos (match-beginning 0)))
+        (replace-match (format "%s = {\n    %s = %s;\n};" prefix attr value))
+        ;; Indent the region that was just modified
+        (indent-region start-pos (point))))))
+
 (map! :leader
-      :desc "Configure emacs" "e c e" (lambda () (interactive) (find-file "~/syma/doom-emacs.org")))
+      :desc "Configure emacs" "e c e" (lambda () (interactive) (find-file "~/nixos-dotfiles/config/doom/doom-emacs.org")))
 
 (map! :leader
       :desc "Configure system packages" "e c p" (lambda () (interactive) (find-file "~/system-manager/metapac.org")))

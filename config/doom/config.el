@@ -487,6 +487,8 @@
   (add-to-list 'eglot-server-programs
                '(typst-ts-mode . ("tinymist")))
   (add-to-list 'eglot-server-programs
+               '(nix-mode . ("nixd")))
+  (add-to-list 'eglot-server-programs
                '(astro-mode . ("astro-ls" "--stdio"
                                :initializationOptions
                                (:typescript (:tsdk "./node_modules/typescript/lib"))))))
@@ -533,8 +535,22 @@
          (choice (completing-read "select an option: " options nil t)))
     (async-shell-command (concat (shell-quote-argument script-path) " " choice))))
 
+(defun nix-expand-attribute ()
+  "Convert foo.bar = value; to foo = { bar = value; };"
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (when (re-search-forward "\\(.*\\)\\.\\([^ ]+\\) = \\(.*\\);" (line-end-position) t)
+      (let ((prefix (match-string 1))
+            (attr (match-string 2))
+            (value (match-string 3))
+            (start-pos (match-beginning 0)))
+        (replace-match (format "%s = {\n    %s = %s;\n};" prefix attr value))
+        ;; Indent the region that was just modified
+        (indent-region start-pos (point))))))
+
 (map! :leader
-      :desc "Configure emacs" "e c e" (lambda () (interactive) (find-file "~/syma/doom-emacs.org")))
+      :desc "Configure emacs" "e c e" (lambda () (interactive) (find-file "~/nixos-dotfiles/config/doom/doom-emacs.org")))
 
 (map! :leader
       :desc "Configure system packages" "e c p" (lambda () (interactive) (find-file "~/system-manager/metapac.org")))

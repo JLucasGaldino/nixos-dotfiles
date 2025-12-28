@@ -16,7 +16,12 @@
 
   time.timeZone = "Europe/Madrid";
 
-  services.displayManager.ly.enable = true;
+  services.displayManager.ly = {
+    enable = true;
+    settings = {
+      animation = "matrix";
+    };
+  };
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "client";
@@ -63,6 +68,7 @@
     pamixer
     bluez
     bluez-tools
+    cmatrix
   ];
 
   fonts.packages = with pkgs; [

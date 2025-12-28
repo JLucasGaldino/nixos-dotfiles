@@ -11,6 +11,7 @@ let
     walls = "walls";
     emacs = "emacs";
     doom = "doom";
+    macchina = "macchina";
   };
   rebuild_script = pkgs.writeShellApplication {
     name = "rebuild";
@@ -38,6 +39,12 @@ let
       done
       # Output the total number of pages
       echo "$total_pages"
+    '';
+  };
+  snip_script = pkgs.writeShellApplication {
+    name = "snip";
+    text = ''
+    grim -l 0 -g "$(slurp)" - | wl-copy
     '';
   };
 in
@@ -86,17 +93,25 @@ in
     gcc
     rofi
     librewolf
+    mullvad-browser
+    tor-browser
     anki
     croc
     fishPlugins.pure
     macchina
+    bottom
     pass
+    passExtensions.pass-otp
     pinentry-curses
     swaynotificationcenter
     libnotify
     thunderbird
+    qbittorrent
+    mpv
     rebuild_script
     poppler-utils
     pdf_page_count_in_dir_script
+    snip_script
+    nixd
   ];
 }
