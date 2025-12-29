@@ -269,6 +269,7 @@
 ;; Org link parameters:1 ends here
 
 ;; [[file:doom-emacs.org::*Rest][Rest:1]]
+(setq global-org-modern-mode t)
 (setq org-modern-fold-stars
       '(("▶" . "▼")
         ("▷" . "▽")

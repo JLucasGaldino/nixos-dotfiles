@@ -666,6 +666,7 @@ A nice command manager and executor for projects
 
 ** Rest
 #+begin_src elisp :header-args :tangle config.el :comments yes
+(setq global-org-modern-mode t)
 (setq org-modern-fold-stars
       '(("▶" . "▼")
         ("▷" . "▽")
