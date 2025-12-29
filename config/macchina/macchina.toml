@@ -1,2 +1,2 @@
-theme = "Hydrogen"
+theme = "Boron"
 show = ["Host", "Machine", "Kernel", "Distribution", "DesktopEnvironment", "Packages", "Shell", "Terminal", "Processor"]

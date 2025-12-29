@@ -666,17 +666,14 @@ A nice command manager and executor for projects
 
 ** Rest
 #+begin_src elisp :header-args :tangle config.el :comments yes
-(setq global-org-modern-mode t)
-(setq org-modern-fold-stars
-      '(("▶" . "▼")
-        ("▷" . "▽")
-        ;; ("⯈" . "⯆")
-        ("▷" . "▽")
-        ("▹" . "▿")
-        ("▸" . "▾"))
-      )
-
-
+(after! org
+  (global-org-modern-mode 1)
+  (setq org-modern-fold-stars
+        '(("▶" . "▼")
+          ("▷" . "▽")
+          ("▷" . "▽")
+          ("▹" . "▿")
+          ("▸" . "▾"))))
 
 ;; Org timer and alarm
 (setq org-clock-sound "~/Downloads/ding-36029.wav")

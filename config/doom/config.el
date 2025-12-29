@@ -269,17 +269,14 @@
 ;; Org link parameters:1 ends here
 
 ;; [[file:doom-emacs.org::*Rest][Rest:1]]
-(setq global-org-modern-mode t)
-(setq org-modern-fold-stars
-      '(("▶" . "▼")
-        ("▷" . "▽")
-        ;; ("⯈" . "⯆")
-        ("▷" . "▽")
-        ("▹" . "▿")
-        ("▸" . "▾"))
-      )
-
-
+(after! org
+  (global-org-modern-mode 1)
+  (setq org-modern-fold-stars
+        '(("▶" . "▼")
+          ("▷" . "▽")
+          ("▷" . "▽")
+          ("▹" . "▿")
+          ("▸" . "▾"))))
 
 ;; Org timer and alarm
 (setq org-clock-sound "~/Downloads/ding-36029.wav")

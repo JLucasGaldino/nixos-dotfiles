@@ -32,6 +32,9 @@
     autoRepeatInterval = 35;
     windowManager.qtile.enable = true;
   };
+  services.illum = {
+    enable = true;
+  };
 
   users.users.lucas = {
     isNormalUser = true;
