@@ -467,8 +467,6 @@ For completion, the packages used were taken from [[https://lambdaland.org/posts
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 (setq org-scheduled-past-days 0)
-(add-to-list 'org-emphasis-alist
-             '("*" (bold :foreground "orange")))
 #+end_src
 *** Roam
 #+begin_src elisp :header-args :tangle config.el :comments yes

@@ -80,8 +80,6 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 (setq org-scheduled-past-days 0)
-(add-to-list 'org-emphasis-alist
-             '("*" (bold :foreground "orange")))
 ;; Basic setup:1 ends here
 
 ;; [[file:doom-emacs.org::*Roam][Roam:1]]

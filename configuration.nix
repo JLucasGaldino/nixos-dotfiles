@@ -35,6 +35,7 @@
   services.illum = {
     enable = true;
   };
+  services.udisks2.enable = true;
 
   users.users.lucas = {
     isNormalUser = true;

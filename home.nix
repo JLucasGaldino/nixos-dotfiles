@@ -62,6 +62,14 @@ in
     };
   };
   home.stateVersion = "25.11";
+  services.udiskie = {
+    enable = true;
+    settings = {
+      program_options = {
+        file_manager = "${pkgs.foot}/bin/foot -e ${pkgs.yazi}/bin/yazi";
+      };
+    };
+  };
   programs.bash = {
     enable = true;
     shellAliases = {
@@ -105,9 +113,11 @@ in
     pinentry-curses
     swaynotificationcenter
     libnotify
+    tomb
     thunderbird
     qbittorrent
     mpv
+    yazi
     rebuild_script
     poppler-utils
     pdf_page_count_in_dir_script
