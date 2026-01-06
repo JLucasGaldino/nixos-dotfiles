@@ -1,0 +1,379 @@
+#+TITLE: Lucas's Emacs config
+#+AUTHOR: Lucas Galdino
+#+DESCRIPTION: My personal configuration
+#+STARTUP: overview
+#+OPTIONS: toc:2
+
+* Elpaca
+#+begin_src emacs-lisp 
+(defvar elpaca-installer-version 0.11)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+#+end_src
+#+begin_src emacs-lisp
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+#+end_src
+* Evil mode
+#+begin_src emacs-lisp 
+      (use-package evil
+        :ensure t
+        :demand t
+        :init
+        (setq evil-want-integration t)
+        (setq evil-want-keybinding nil)
+        :config
+        (evil-mode 1))
+      (use-package evil-collection
+        :ensure t
+        :after evil
+        :config
+        (setq evil-collection-mode-list '(dired calendar))
+        (evil-collection-init))
+      (use-package evil-org
+        :ensure t
+        :after org
+        :hook (org-mode . evil-org-mode)
+        :config
+        (require 'evil-org-agenda)
+        (evil-org-agenda-set-keys))
+#+end_src
+* General's keybindings
+#+begin_src emacs-lisp
+  (use-package general
+    :ensure t
+    :demand t
+    :config
+    (general-evil-setup)
+    (general-create-definer lg/leader-keys
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC"
+      :global-prefix "M-SPC")
+    (lg/leader-keys
+      "b" '(:ignore t :wk "buffer")
+      "bb" '(switch-to-buffer :wk "Switch buffer")
+      "bk" '(kill-this-buffer :wk "Kill buffer")
+      "bn" '(next-buffer :wk "Next buffer")
+      "bp" '(previous-buffer :wk "Previous buffer")
+      "br" '(revert-buffer :wk "Reload buffer")
+      "." '(find-file :wk "Find file")
+      "c" '(:ignore t :wk "calculator")
+      "ca" '(calc :wk "Emacs Calc")
+      "cq" '(quick-calc :wk "Quick Calc")
+      "e" '(:ignore t :wk "Emacs config")
+      "er" '(lg/emacs-config-reload :wk "Emacs config reload")
+      "ee" '(lg/emacs-config-edit :wk "Emacs config edit")
+      "a" '(org-agenda :wk "Org agenda")
+      "m" '(:ignore t :wk "Modify Org heading")
+      "mt" '(org-todo :wk "Modify TODO keyword")
+      "mq" '(org-set-tags-command :wk "Modify tags")
+      "mp" '(org-priority :wk "Modify priority")
+      "h" '(:ignore t :wk "Helpful")
+      "hv" '(helpful-variable :wk "Helpful variable")
+      "hf" '(helpful-function :wk "Helpful function")
+      "hk" '(helpful-key :wk "Helpful key")))
+#+end_src
+* Which-key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :demand t
+    :config
+    (setq which-key-separator " → ")
+    (which-key-mode))
+#+end_src
+* Helpful
+#+begin_src emacs-lisp
+  (use-package helpful
+    :ensure t
+    :demand t
+    :config
+    (when (fboundp 'shortdoc-function-groups)
+      (declare-function shortdoc-function-groups "shortdoc")))
+#+end_src
+* Managing the Emacs config
+** Reload config
+#+begin_src emacs-lisp
+  (defun lg/emacs-config-reload ()
+    (interactive)
+    (load user-init-file))
+#+end_src
+** Edit config
+#+begin_src emacs-lisp
+  (defun lg/emacs-config-edit ()
+    (interactive)
+    (find-file (expand-file-name "config.org" user-emacs-directory)))
+#+end_src
+* Fonts
+** Basic settings
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil
+  		    :font "JetBrainsMono Nerd Font Mono"
+  		    :height 120
+  		    :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+  		    :font "Fira Sans"
+  		    :height 120
+  		    :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+  		    :font "JetBrainsMono Nerd Font Mono"
+  		    :height 120
+  		    :weight 'medium)
+  (set-face-attribute 'font-lock-comment-face nil
+  		    :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+  		    :slant 'italic)
+#+end_src
+** Ligatures
+#+begin_src emacs-lisp
+  (use-package ligature
+    :ensure t
+    :demand t
+    :config
+    (ligature-set-ligatures '(prog-mode org-mode) '("--" "---" "==" "===" "!=" "!==" "=!="
+                                "=:=" "=/=" "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;" "!!"
+                                "??" "???" "?:" "?." "?=" "<:" ":<" ":>" ">:" "<:<" "<>" "<<<" ">>>"
+                                "<<" ">>" "||" "-|" "_|_" "|-" "||-" "|=" "||=" "##" "###" "####"
+                                "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>" "<$"
+                                "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</" "</>" "/>" "<!--" "<#--"
+                                "-->" "->" "->>" "<<-" "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>"
+                                "==>" "=>" "=>>" ">=>" ">>=" ">>-" ">-" "-<" "-<<" ">->" "<-<" "<-|"
+                                "<=|" "|=>" "|->" "<->" "<~~" "<~" "<~>" "~~" "~~>" "~>" "~-" "-~"
+                                "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|" "||>" "<||"
+                                "|||>" "<|||" "<|>" "..." ".." ".=" "..<" ".?" "::" ":::" ":=" "::="
+                                ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
+                                "<:<" ";;;"))
+    (global-ligature-mode t))
+#+end_src
+** Icons
+#+begin_src emacs-lisp
+  (use-package all-the-icons
+    :ensure t
+    :demand t)
+#+end_src
+* User interface 
+** Remove menubar, toolbar, scrollbar
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+** Display line numbers
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode 1)
+  (setq-default display-line-numbers-type 'visual)
+#+end_src 
+** Theme
+#+begin_src emacs-lisp
+  (use-package everforest-emacs
+    :ensure (:host github :repo "Theory-of-Everything/everforest-emacs" :main "everforest.el" :files ("*.el"))
+    :demand t
+    :no-require t
+    :config
+    (load-theme 'everforest-hard-dark t))
+#+end_src
+** Enlight startpage
+#+begin_src emacs-lisp
+  (use-package enlight
+    :ensure t
+    :demand t
+    :hook (enlight-mode . (lambda () (display-line-numbers-mode -1)))
+    :custom
+    (enlight-content
+     (concat
+      "Liberty"
+      "\n"
+      "Vitality"
+      "\n"
+      "Beauty")))
+  (setq initial-buffer-choice #'enlight)
+#+end_src
+* Minad
+** Vertico 
+#+begin_src emacs-lisp
+  (use-package vertico
+    :ensure t
+    :demand t
+    :init
+    (vertico-mode)
+    :config
+    (general-define-key
+     :keymaps 'vertico-map
+     "C-j" #'vertico-next
+     "C-k" #'vertico-previous))
+
+  (use-package savehist
+    :init
+    (savehist-mode))
+#+end_src
+** Orderless
+#+begin_src emacs-lisp
+  ;; Optionally use the `orderless' completion style.
+  (use-package orderless
+    :ensure t
+    :demand t
+    :custom
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;; (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
+    ;; (orderless-component-separator #'orderless-escapable-split-on-space)
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion))))
+    (completion-category-defaults nil) ;; Disable defaults, use our settings
+    (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+#+end_src
+** Marginalia
+#+begin_src emacs-lisp
+    (use-package marginalia
+      :ensure t
+      :demand t
+      :init
+      (marginalia-mode))
+#+end_src
+** All-the-icons completion
+#+begin_src emacs-lisp
+  (use-package all-the-icons-completion
+    :ensure t
+    :after (marginalia all-the-icons)
+    :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+    :init
+    (all-the-icons-completion-mode))
+
+#+end_src
+* Dirvish
+#+begin_src emacs-lisp
+    (use-package dirvish
+      :ensure t
+      :demand t
+      :init
+      (dirvish-override-dired-mode))
+#+end_src
+* Smartparens
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :hook (prog-mode text-mode markdown-mode)
+    :config
+    (require 'smartparens-config))
+#+end_src
+* Org-mode
+** Org-modern 
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :ensure t
+    :after org
+    :config
+    (global-org-modern-mode))
+#+end_src
+** Org-agenda
+#+begin_src emacs-lisp
+    ;; Files
+    (setq org-agenda-files '("~/org/agenda/todo.org" "~/org/agenda/calendar.org" "~/org/agenda/uni-calendar.org"))
+
+    ;; Window setup
+    (setq org-agenda-window-setup 'current-window)
+
+    ;; Keywords
+    (setq org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "HOLD(h)" "EVNT(e)" "|" "DONE(d)" "PAST(s)")))
+
+    ;; Logging
+    (defun log-todo-next-creation-date (&rest ignore)
+      "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+      (when (and (string= (org-get-todo-state) "NEXT")
+      	     (not (org-entry-get nil "ACTIVATED")))
+        (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+    (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+    (setq org-log-done 'time)
+
+    ;; Custom agenda views
+    (setq org-agenda-custom-commands
+    	'(("n" "NEXT items"
+    	 ((todo "NEXT")))
+    	("g" "General agenda"
+    	 ((agenda ""
+    		  ((org-agenda-start-day "+0d")
+    		     (org-agenda-deadline-leaders
+    		      '("" "" "%2d d. ago: "))
+    		     (org-agenda-start-on-weekday 0)
+    		     (org-agenda-span 'week)
+    		   (org-deadline-warning-days 0)))))
+    	("d" "Diffuse time"
+    	 ((tags "%diffuse")))
+    	  ("r" "Random Review"
+    	   ((tags-todo "CATEGORY=\"quest\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Quests")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"spiritual\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Spiritual")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"social\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Social")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"physical\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Physical")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"studies\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Studies")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"organization\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Organization")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"diffuse\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Diffuse")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"aesthetical\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Aesthetical")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"financial\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Financial")
+    			(org-agenda-max-entries 5)))
+    	    (tags-todo "CATEGORY=\"technological\"+TODO=\"TODO\"-SCHEDULED={.+}-DEADLINE={.+}"
+    		       ((org-agenda-overriding-header "Technological")
+    			(org-agenda-max-entries 5)))))))
+    (setq org-agenda-tags-column 0)
+
+    ;; Prefix format
+  (setq org-agenda-prefix-format '((agenda . " %-2i %?-12t %s ")
+                                   (todo .   " %-2i ")
+                                   (tags .   " %-2i ")
+                                   (search . " %-2i ")))
+#+end_src
+** To implement

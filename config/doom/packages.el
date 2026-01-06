@@ -112,6 +112,7 @@
 (package! multiple-cursors)
 
 (package! org-sliced-images)
+
 ;; If the package you are trying to install does not contain a PACKAGENAME.el
 ;; file, or is located in a subdirectory of the repo, you'll need to specify
 ;; `:files' in the `:recipe':

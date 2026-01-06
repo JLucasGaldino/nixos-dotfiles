@@ -12,6 +12,8 @@ let
     emacs = "emacs";
     doom = "doom";
     macchina = "macchina";
+    helix = "helix";
+    lukemacs = "lukemacs";
   };
   rebuild_script = pkgs.writeShellApplication {
     name = "rebuild";
@@ -92,10 +94,16 @@ in
     }) 
     configs;
 
+  home.pointerCursor = {
+    name = "phinger-cursors-light";
+    package = pkgs.phinger-cursors;
+    size = 32;
+    gtk.enable = true;
+  };
+
   home.packages = with pkgs; [
     neovim
     ripgrep
-    nil
     nixpkgs-fmt
     nodejs
     gcc
@@ -118,10 +126,16 @@ in
     qbittorrent
     mpv
     yazi
+    zip
+    unzip
+    qpdf
+    simple-scan
     rebuild_script
     poppler-utils
     pdf_page_count_in_dir_script
     snip_script
     nixd
+    libreoffice
+    dua
   ];
 }

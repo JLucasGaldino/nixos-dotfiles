@@ -209,7 +209,7 @@
                                ("physical" . "dumbbell")
                                ("studies" . "book_open")
                                ("organization" . "compass_drafting")
-                               ("aesthetical" . "music")
+                               ("environmental" . "home")
                                ("financial" . "money")
                                ("technological" . "laptop")
                                ))
@@ -263,7 +263,10 @@
            (async-shell-command (format "qutebrowser %s" path)))
  "copy"
  :follow (lambda (path)
-           (async-shell-command (format "echo \"%s\" \| xclip -selection clipboard" path))))
+           (async-shell-command (format "echo \"%s\" \| xclip -selection clipboard" path)))
+ "tor"
+ :follow (lambda (path)
+           (async-shell-command (format "torbrowser %s" path))))
 ;; Org link parameters:1 ends here
 
 ;; [[file:doom-emacs.org::*Rest][Rest:1]]
@@ -321,6 +324,25 @@
         :n "s" #'fretboard-switch-to-scale
         :n "c" #'fretboard-switch-to-chord
         :n "q" #'fretboard-quit-all))
+
+(after! ox-publish
+  (setq org-html-container-element "section"
+        org-export-with-section-numbers nil
+        org-html-self-link-headlines nil)
+  (setq org-publish-project-alist
+        '(("JLucasGaldino.github.io"
+           :base-directory "~/lab/projects/JLucasGaldino.github.io/_org"
+           :base-extension "org"
+           :publishing-directory "~/lab/projects/JLucasGaldino.github.io/_posts/"
+           :recursive t
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4
+           :html-extension "html"
+           :section-numbers nil
+           :body-only t))))
+
+
+
 ;; Email
 ;; https://macowners.club/posts/email-emacs-mu4e-macos/
 ;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e/")
@@ -404,68 +426,6 @@
 ;; ;; Buku
 ;; (setq ebuku-buku-path "~/.local/bin/buku")
 
-;; Ellama
-;; (use-package! ellama
-;;   :bind ("C-c e" . ellama-transient-main-menu)
-;;   :init
-;;   ;; setup key bindings
-;;   ;; (setopt ellama-keymap-prefix "C-c e")
-;;   ;; language you want ellama to translate to
-;;   (setopt ellama-language "English")
-;;   ;; could be llm-openai for example
-;;   (require 'llm-ollama)
-;;   (setopt ellama-provider
-;;           (make-llm-ollama
-;;            ;; this model should be pulled to use it
-;;            ;; value should be the same as you print in terminal during pull
-;;            :chat-model "llama3.2"
-;;            :embedding-model "nomic-embed-text"
-;;            :default-chat-non-standard-params '(("num_ctx" . 8192))))
-;;   (setopt ellama-summarization-provider
-;;           (make-llm-ollama
-;;            :chat-model "llama3.2"
-;;            :embedding-model "nomic-embed-text"
-;;            :default-chat-non-standard-params '(("num_ctx" . 32768))))
-;;   (setopt ellama-coding-provider
-;;           (make-llm-ollama
-;;            :chat-model "llama3.2"
-;;            :embedding-model "nomic-embed-text"
-;;            :default-chat-non-standard-params '(("num_ctx" . 32768))))
-;;   ;; Predefined llm providers for interactive switching.
-;;   ;; You shouldn't add ollama providers here - it can be selected interactively
-;;   ;; without it. It is just example.
-;;   (setopt ellama-providers
-;;           '(("zephyr" . (make-llm-ollama
-;;                          :chat-model "zephyr:7b-beta-q6_K"
-;;                          :embedding-model "zephyr:7b-beta-q6_K")) ("mistral" . (make-llm-ollama
-;;                           :chat-model "mistral:7b-instruct-v0.2-q6_K"
-;;                           :embedding-model "mistral:7b-instruct-v0.2-q6_K"))
-;;             ("mixtral" . (make-llm-ollama
-;;                           :chat-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"
-;;                           :embedding-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"))))
-;;   ;; Naming new sessions with llm
-;;   (setopt ellama-naming-provider
-;;           (make-llm-ollama
-;;            :chat-model "llama3.2"
-;;            :embedding-model "nomic-embed-text"
-;;            :default-chat-non-standard-params '(("stop" . ("\n")))))
-;;   (setopt ellama-naming-scheme 'ellama-generate-name-by-llm)
-;;   ;; Translation llm provider
-;;   (setopt ellama-translation-provider
-;;           (make-llm-ollama
-;;            :chat-model "llama3.2"
-;;            :embedding-model "nomic-embed-text"
-;;            :default-chat-non-standard-params
-;;            '(("num_ctx" . 32768))))
-;;   ;; customize display buffer behaviour
-;;   ;; see ~(info "(elisp) Buffer Display Action Functions")~
-;;   (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
-;;   (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
-;;   :config
-;;   ;; send last message in chat buffer with C-c C-c
-;;   (add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
-;;   (setq ellama-sessions-directory "~/org/assets/ellama-sessions/"
-;;         ellama-sessions-auto-save t))
 
 (use-package! ox-typst
   :after org)
@@ -478,17 +438,17 @@
 (setq auto-mode-alist
       (append '((".*\\.astro\\'" . astro-mode))
               auto-mode-alist))
-
-(after! eglot
-  (add-to-list 'eglot-server-programs
-               '(typst-ts-mode . ("tinymist")))
-  (add-to-list 'eglot-server-programs
-               '(nix-mode . ("nixd")))
-  (add-to-list 'eglot-server-programs
-               '(astro-mode . ("astro-ls" "--stdio"
-                               :initializationOptions
-                               (:typescript (:tsdk "./node_modules/typescript/lib"))))))
-
+;;; LSP Configuration
+(after! lsp-mode
+  (setq lsp-enable-file-watchers nil  ; Disable for performance
+        lsp-idle-delay 0.5
+        lsp-log-io nil)
+  (add-to-list 'lsp-disabled-clients 'nix-nil)
+  (setq lsp-nix-nixd-server-path "nixd"
+        lsp-nix-nixd-formatting-command ["nixfmt"]
+        lsp-nix-nixd-nixpkgs-expr "import <nixpkgs> {  }"
+        lsp-nix-nixd-nixos-options-expr "(builtins.getFlake \"/home/lucas/nixos-dotfiles\").nixosConfigurations.nixie.options"
+        lsp-nix-nixd-home-manager-options-expr "(builtins.getFlake \"/home/lucas/nixos-dotfiles\").nixosConfigurations.nixie.config.home-manager.users.lucas.options"))
 
 ;; Install Janet Tree-sitter grammar at startup
 (setq treesit-language-source-alist
@@ -615,7 +575,7 @@
   (add-hook 'mpdel-browser-mode-hook #'setup-mpdel-keybindings)
   (add-hook 'mpdel-song-mode-hook #'setup-mpdel-keybindings)
   (add-hook 'mpdel-tablist-mode-hook #'setup-mpdel-keybindings))
-
+;; From here, does not work
 ;; Yewtube
 (defun yewtube()
   "Run Yewtube from Emacs."

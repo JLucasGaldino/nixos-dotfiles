@@ -50,6 +50,7 @@
         "max-length": 50
     },
     "pulseaudio" : { 
+        "format-muted": "󰝟 ",
         "format": " {volume}"
     },
     "tray": {

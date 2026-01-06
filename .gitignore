@@ -1,4 +1,11 @@
 config/nvim
 config/qtile
 config/emacs
+config/lukemacs/eln-cache
+config/lukemacs/elpaca
+config/lukemacs/auto-save-list
+config/lukemacs/history
+config/lukemacs/config.el
+config/lukemacs/tutorial
+
 

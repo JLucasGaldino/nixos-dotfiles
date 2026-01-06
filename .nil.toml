@@ -1,0 +1,2 @@
+[flake]
+   auto-eval-inputs = false
