@@ -7,5 +7,8 @@ config/lukemacs/auto-save-list
 config/lukemacs/history
 config/lukemacs/config.el
 config/lukemacs/tutorial
+config/lukemacs/transient
+config/lukemacs/tabsession.el
+config/lukemacs/org-roam.db
 
 

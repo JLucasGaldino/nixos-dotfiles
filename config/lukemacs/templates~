@@ -1,0 +1,6 @@
+;; -*- mode: emacs-lisp -*-
+fundamental-mode ;; Available everywhere
+
+(today (format-time-string "%Y-%m-%d")
+       :ann "Today's date"
+       :doc "Insert today's date")

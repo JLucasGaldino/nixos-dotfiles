@@ -127,6 +127,7 @@
     nerd-fonts.jetbrains-mono
     fira-sans
     libertinus
+    emacs-all-the-icons-fonts
   ];
 
   nix.settings = { 

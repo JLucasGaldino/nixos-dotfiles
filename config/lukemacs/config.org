@@ -1,6 +1,6 @@
 #+TITLE: Lucas's Emacs config
 #+AUTHOR: Lucas Galdino
-#+DESCRIPTION: My personal configuration
+j#+DESCRIPTION: My personal configuration
 #+STARTUP: overview
 #+OPTIONS: toc:2
 
@@ -53,63 +53,77 @@
 #+end_src
 * Evil mode
 #+begin_src emacs-lisp 
-      (use-package evil
-        :ensure t
-        :demand t
-        :init
-        (setq evil-want-integration t)
-        (setq evil-want-keybinding nil)
-        :config
-        (evil-mode 1))
-      (use-package evil-collection
-        :ensure t
-        :after evil
-        :config
-        (setq evil-collection-mode-list '(dired calendar))
-        (evil-collection-init))
-      (use-package evil-org
-        :ensure t
-        :after org
-        :hook (org-mode . evil-org-mode)
-        :config
-        (require 'evil-org-agenda)
-        (evil-org-agenda-set-keys))
+  (use-package evil
+    :ensure t
+    :demand t
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    :config
+    (evil-mode 1))
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :config
+    (setq evil-collection-mode-list '(calendar))
+    (evil-collection-init))
+  (use-package evil-org
+    :ensure t
+    :after org
+    :hook (org-mode . evil-org-mode))
 #+end_src
 * General's keybindings
 #+begin_src emacs-lisp
-  (use-package general
-    :ensure t
-    :demand t
-    :config
-    (general-evil-setup)
-    (general-create-definer lg/leader-keys
-      :states '(normal insert visual emacs)
-      :keymaps 'override
-      :prefix "SPC"
-      :global-prefix "M-SPC")
-    (lg/leader-keys
-      "b" '(:ignore t :wk "buffer")
-      "bb" '(switch-to-buffer :wk "Switch buffer")
-      "bk" '(kill-this-buffer :wk "Kill buffer")
-      "bn" '(next-buffer :wk "Next buffer")
-      "bp" '(previous-buffer :wk "Previous buffer")
-      "br" '(revert-buffer :wk "Reload buffer")
-      "." '(find-file :wk "Find file")
-      "c" '(:ignore t :wk "calculator")
-      "ca" '(calc :wk "Emacs Calc")
-      "cq" '(quick-calc :wk "Quick Calc")
-      "e" '(:ignore t :wk "Emacs config")
-      "er" '(lg/emacs-config-reload :wk "Emacs config reload")
-      "ee" '(lg/emacs-config-edit :wk "Emacs config edit")
-      "a" '(org-agenda :wk "Org agenda")
-      "m" '(:ignore t :wk "Modify Org heading")
-      "mt" '(org-todo :wk "Modify TODO keyword")
-      "mq" '(org-set-tags-command :wk "Modify tags")
-      "mp" '(org-priority :wk "Modify priority")
-      "h" '(:ignore t :wk "Helpful")
-      "hv" '(helpful-variable :wk "Helpful variable")
-      "hf" '(helpful-function :wk "Helpful function")
-      "hk" '(helpful-key :wk "Helpful key")))
+    (use-package general
+      :ensure t
+      :demand t
+      :config
+      (general-evil-setup)
+      (general-create-definer lg/leader-keys
+        :states '(normal insert visual emacs)
+        :keymaps 'override
+        :prefix "SPC"
+        :global-prefix "M-SPC")
+      (lg/leader-keys
+        "b" '(:ignore t :wk "buffer")
+        "bs" '(switch-to-buffer :wk "Switch buffer")
+        "bk" '(kill-current-buffer :wk "Kill buffer")
+        "bn" '(next-buffer :wk "Next buffer")
+        "bp" '(previous-buffer :wk "Previous buffer")
+        "br" '(revert-buffer :wk "Reload buffer")
+        "." '(find-file :wk "Find file")
+        "c" '(:ignore t :wk "calculator")
+        "ca" '(calc :wk "Emacs Calc")
+        "cq" '(quick-calc :wk "Quick Calc")
+        "e" '(:ignore t :wk "Emacs config")
+        "er" '(lg/emacs-config-reload :wk "Emacs config reload")
+        "ee" '(lg/emacs-config-edit :wk "Emacs config edit")
+        "a" '(org-agenda :wk "Org agenda")
+        "m" '(:ignore t :wk "Modify Org heading")
+        "mt" '(org-todo :wk "Modify TODO keyword")
+        "mq" '(org-set-tags-command :wk "Modify tags")
+        "mp" '(org-priority :wk "Modify priority")
+        "h" '(:ignore t :wk "Helpful")
+        "hv" '(helpful-variable :wk "Helpful variable")
+        "hf" '(helpful-function :wk "Helpful function")
+        "hk" '(helpful-key :wk "Helpful key")
+        "t" '(:ignore t :wk "Timer")
+        "ts" '(org-timer-set-timer :wk "Timer set")
+        "w" '(:ignore t :wk "Window")
+        "wv" '(evil-window-vsplit :wk "Window split vertically")
+        "ws" '(evil-window-split :wk "Window split horizontally")
+        "wq" '(evil-window-delete :wk "Window delete")
+        "wh" '(evil-window-left :wk "Window go to left")
+        "wj" '(evil-window-down :wk "Window go to bottom")
+        "wk" '(evil-window-up :wk "Window go to top")
+        "wl" '(evil-window-right :wk "Window go to right")
+        "s" '(:ignore t :wk "Tabspaces")
+        "ss" '(tabspaces-switch-or-create-workspace :wk "Switch workspace")
+        "sr" '(tab-bar-rename-tab-by-name :wk "Rename workspace")
+        "sq" '(tabspaces-close-workspace :wk "Close workspace")
+        "n" '(:ignore t :wk "Roam nodes")
+        "nf" '(org-roam-node-find :wk "Find node")
+        "g" '(magit-status :wk "Magit")))
 #+end_src
 * Which-key
 #+begin_src emacs-lisp
@@ -150,8 +164,8 @@
   		    :height 120
   		    :weight 'medium)
   (set-face-attribute 'variable-pitch nil
-  		    :font "Fira Sans"
-  		    :height 120
+  		    :font "Libertinus Serif"
+  		    :height 160
   		    :weight 'medium)
   (set-face-attribute 'fixed-pitch nil
   		    :font "JetBrainsMono Nerd Font Mono"
@@ -212,37 +226,118 @@
 #+end_src
 ** Enlight startpage
 #+begin_src emacs-lisp
-  (use-package enlight
+  (defface lg/enlight-ascii-face
+  '((t (:foreground "#83a598")))   ;; pick any color
+  "Face for startup ASCII art.")
+
+(defconst lg/enlight-ascii
+  "        ____     _____
+       /  \\  _.-'_.-'
+       \\  _\\/   _/
+     ___)/   __<
+    <'-;:\\_  _\\
+        '; \\_\\
+         >/-,\\
+       \"\"`  |_\\
+")
+
+(use-package enlight
+  :ensure t
+  :demand t
+  :custom
+  ;; keep content simple, no grid
+  (enlight-content
+   (concat
+    (propertize lg/enlight-ascii 'face 'lg/enlight-ascii-face)
+    "\nLiberty\nVitality\nBeauty\n"))
+  :hook
+  (enlight-mode . (lambda () (display-line-numbers-mode -1))))
+
+(setq initial-buffer-choice #'enlight)
+
+#+end_src
+** Mood-line
+#+begin_src emacs-lisp
+  (use-package mood-line
     :ensure t
     :demand t
-    :hook (enlight-mode . (lambda () (display-line-numbers-mode -1)))
+    :config
+    (defun lg/pdf-page-info ()
+      (when (eq major-mode 'pdf-view-mode)
+        (format "P:%d/%d" 
+  	      (image-mode-window-get 'page)
+  	      (pdf-cache-number-of-pages))))
+    (setq mood-line-format
+  	(mood-line-defformat
+  	 :left
+  	 (((mood-line-segment-modal) . " ")
+  	  ((or (mood-line-segment-buffer-status) "") . " ")
+  	  ((mood-line-segment-buffer-name) . "  ")
+  	  ((mood-line-segment-cursor-position) . " ")
+  	  (mood-line-segment-scroll))
+  	 :right
+  	 (((lg/pdf-page-info) . " ")
+  	  ((mood-line-segment-vc) . " ")
+  	  ((mood-line-segment-major-mode) . " ")
+  	  ((mood-line-segment-misc-info) . " ")
+  	  ((mood-line-segment-checker) . " ")
+  	  ((mood-line-segment-process) . " "))))
+    
+    
+
+
+    ;; Enable mood-line (put this last so the format is set first)
+    (mood-line-mode)
+
     :custom
-    (enlight-content
-     (concat
-      "Liberty"
-      "\n"
-      "Vitality"
-      "\n"
-      "Beauty")))
-  (setq initial-buffer-choice #'enlight)
+    (mood-line-glyph-alist mood-line-glyphs-fira-code))
 #+end_src
-* Minad
+** Tabspaces
+#+begin_src emacs-lisp
+  (use-package tabspaces
+    :ensure t
+    :demand t
+    :hook (after-init . tabspaces-mode))
+#+end_src
+** Cursor settings
+#+begin_src emacs-lisp
+  (blink-cursor-mode -1)
+#+end_src
+* Tempel
+#+begin_src emacs-lisp
+  (use-package tempel
+    :ensure t
+    :demand t
+    :bind ("TAB" . tempel-expand)
+    :init
+    (defun tempel-setup-capf ()
+      ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
+      ;; only triggers on exact matches. We add `tempel-expand' *before* the main
+      ;; programming mode Capf, such that it will be tried first.
+      (setq-local completion-at-point-functions
+  		(cons #'tempel-expand completion-at-point-functions)))
+    (add-hook 'conf-mode-hook 'tempel-setup-capf)
+    (add-hook 'prog-mode-hook 'tempel-setup-capf)
+    (add-hook 'text-mode-hook 'tempel-setup-capf))
+#+end_src
+* Minad and completion
 ** Vertico 
 #+begin_src emacs-lisp
-  (use-package vertico
-    :ensure t
-    :demand t
-    :init
-    (vertico-mode)
-    :config
-    (general-define-key
-     :keymaps 'vertico-map
-     "C-j" #'vertico-next
-     "C-k" #'vertico-previous))
+    (use-package vertico
+      :ensure t
+      :demand t
+      :init
+      (vertico-mode)
+      :config
+      (general-define-key
+       :keymaps 'vertico-map
+       "C-j" #'vertico-next
+       "C-k" #'vertico-previous
+       "DEL" #'vertico-directory-delete-char))
 
-  (use-package savehist
-    :init
-    (savehist-mode))
+    (use-package savehist
+      :init
+      (savehist-mode))
 #+end_src
 ** Orderless
 #+begin_src emacs-lisp
@@ -277,13 +372,86 @@
     (all-the-icons-completion-mode))
 
 #+end_src
+** Corfu
+#+begin_src emacs-lisp
+  (use-package corfu
+    :ensure t
+    :demand t
+    :init
+    (global-corfu-mode)
+    :config
+    (setq corfu-auto t))
+#+end_src
+** Cape
+#+begin_src emacs-lisp
+  (use-package cape
+    :ensure t
+    :demand t
+    :init
+    (add-hook 'completion-at-point-functions #'cape-dabbrev)
+    (add-hook 'completion-at-point-functions #'cape-file)
+    (add-hook 'completion-at-point-functions #'cape-elisp-block))
+#+end_src
 * Dirvish
 #+begin_src emacs-lisp
     (use-package dirvish
       :ensure t
       :demand t
       :init
-      (dirvish-override-dired-mode))
+      (dirvish-override-dired-mode)
+      :hook (dired-mode . dired-omit-mode)
+      :custom
+      (dirvish-quick-access-entries
+       '(("u" "~/documents/20-29--Studies/26--u-alicante/2025F--NUR/")))
+      :config
+      (evil-make-overriding-map dirvish-mode-map 'normal)
+      (setq dirvish-attributes
+    	(append
+    	 '(all-the-icons vc-state)
+    	 '(git-msg file-time file-size)))
+      (general-define-key
+       :keymaps 'dirvish-mode-map
+       "h" #'dired-up-directory
+       "j" #'dired-next-line
+       "k" #'dired-previous-line
+       "l" #'dired-find-file
+       "b" #'dirvish-quick-access))
+
+      (add-hook 'dired-mode-hook (lambda () (display-line-numbers-mode -1)))
+#+end_src
+* PDF tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :ensure t
+    :mode ("\\.pdf\\'" . pdf-view-mode)
+    :config
+    (pdf-loader-install)
+    (add-hook 'pdf-view-mode-hook (lambda () (display-line-numbers-mode -1)))
+    (general-define-key
+     :keymaps '(pdf-view-mode-map pdf-history-minor-mode-map)
+     "j" #'pdf-view-next-line-or-next-page
+     "k" #'pdf-view-previous-line-or-previous-page
+     "l" #'lg/pdf-scroll-right
+     "h" #'lg/pdf-scroll-left
+     "=" #'pdf-view-enlarge
+     "-" #'pdf-view-shrink)
+
+    (defun lg/pdf-scroll-right ()
+      (interactive)
+      (image-forward-hscroll 10))
+    (defun lg/pdf-scroll-left ()
+      (interactive)
+      (image-backward-hscroll 10)))
+#+end_src
+* Magit
+#+begin_src emacs-lisp
+  (use-package transient
+    :ensure t)
+  (use-package magit
+    :ensure t
+    :demand t
+    :config
+    (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 #+end_src
 * Smartparens
 #+begin_src emacs-lisp
@@ -293,14 +461,54 @@
     :config
     (require 'smartparens-config))
 #+end_src
+* GPG setup
+#+begin_src emacs-lisp
+  (require 'epa)
+  (setq epa-pinentry-mode 'loopback)
+  (setq epa-file-cache-passphrase-for-symmetric-encryption nil)
+#+end_src
 * Org-mode
+** Org fonts
+#+begin_src emacs-lisp
+  (custom-theme-set-faces
+   'user
+   '(org-level-1 ((t (:inherit outline-1 :font "Libertinus Serif" :weight bold :height 1.35))))
+   '(org-level-2 ((t (:inherit outline-2 :font "Libertinus Serif" :weight bold :height 1.3))))
+   '(org-level-3 ((t (:inherit outline-3 :font "Libertinus Serif" :weight bold :height 1.2))))
+   '(org-level-4 ((t (:inherit outline-4 :font "Libertinus Serif" :weight bold :height 1.1))))
+   '(org-level-5 ((t (:inherit outline-5 :font "Libertinus Serif" :weight bold :height 1.1))))
+   '(org-level-6 ((t (:inherit outline-6 :font "Libertinus Serif" :weight bold :height 1.1))))
+   '(org-level-7 ((t (:inherit outline-7 :font "Libertinus Serif" :weight bold :height 1.1))))
+   '(org-level-8 ((t (:inherit outline-8 :font "Libertinus Serif" :weight bold :height 1.1))))
+   '(org-document-title ((t (:font "Libertinus Serif" :weight bold :height 1.8))))
+   '(org-block ((t (:inherit fixed-pitch :height 1.0))))
+   '(org-code ((t (:inherit (shadow fixed-pitch) :height 0.85))))
+   '(org-verbatim ((t (:inherit (shadow fixed-pitch) :height 0.85))))
+   '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   '(org-checkbox ((t (:inherit fixed-pitch))))
+   '(org-table ((t (:inherit fixed-pitch)))))
+
+  (add-hook 'org-mode-hook 'variable-pitch-mode)
+  (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+  
+  (setq org-hide-emphasis-markers t)
+#+end_src
 ** Org-modern 
 #+begin_src emacs-lisp
   (use-package org-modern
     :ensure t
     :after org
     :config
-    (global-org-modern-mode))
+    (global-org-modern-mode)
+    (setq org-modern-fold-stars
+  	'(("▶" . "▼")
+  	  ("▷" . "▽")
+  	  ("▷" . "▽")
+  	  ("▹" . "▿")
+  	  ("▸" . "▾"))))
+
+
 #+end_src
 ** Org-agenda
 #+begin_src emacs-lisp
@@ -375,17 +583,63 @@
                                    (todo .   " %-2i ")
                                    (tags .   " %-2i ")
                                    (search . " %-2i ")))
+  (add-hook 'org-agenda-mode-hook (lambda () (display-line-numbers-mode -1)))
+  (add-hook 'org-agenda-mode-hook
+    (lambda ()
+      ;; Define SPC as a prefix key
+      (define-prefix-command 'org-agenda-leader-map)
+      (local-set-key (kbd "SPC") 'org-agenda-leader-map)
+      
+      ;; Define SPC m as a sub-prefix
+      (define-prefix-command 'org-agenda-leader-m-map)
+      (define-key org-agenda-leader-map (kbd "m") 'org-agenda-leader-m-map)
+      
+      ;; Navigation
+      (local-set-key (kbd "j") #'org-agenda-next-item)
+      (local-set-key (kbd "k") #'org-agenda-previous-item)
+      
+      ;; Now bind under SPC m
+      (define-key org-agenda-leader-m-map (kbd "t") #'org-agenda-todo)
+      (define-key org-agenda-leader-m-map (kbd "q") #'org-agenda-set-tags)
+      (define-key org-agenda-leader-m-map (kbd "p") #'org-agenda-priority)))
+#+end_src
+** Roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :after org
+    :config
+    (setq org-roam-directory (file-truename "~/org/roam/"))
+    (org-roam-db-autosync-mode))
+  (use-package org-roam-ui
+    :ensure t
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t))
+
 #+end_src
 * To implement
-- setup libertinus font
-- sophibos.io guide to beautify org mode
+- [X] setup libertinus font
+- [X] sophibos.io guide to beautify org mode
+- [X] finish welcome screen
+- [X] mood-line modeline
+- [X] gpg
+- [X] finish dired setup
+- [X] add pdftools
+- [X] org-roam
+- [X] better org-agenda keybinds (check latest convo with claude)
+- [X] corfu + cape
+- [X] set dired quick access
+- [X] change logo color
+- [X] add pdftool bindings
+- [X] tempel completions
+- [X] tabbar workspaces
+- [ ] eglot for my selected languages
+- [ ] fix calendar bindings
+- magit
 - setup S-M or S-C bindings
-- org-roam
 - task capture templates
-- finish welcome screen
-- corfu + cape
 - dumb-jump
-- tempel completions
-- tabbar workspaces
-- mood-line modeline
-- minions for moodline
+- (maybe later) minions for moodline
