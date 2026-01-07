@@ -451,7 +451,12 @@ j#+DESCRIPTION: My personal configuration
     :ensure t
     :demand t
     :config
-    (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+    (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+    (general-define-key
+     :keymaps 'magit-status-mode-map
+     "j" #'magit-next-line
+     "k" #'magit-previous-line
+     "p" #'magit-push))
 #+end_src
 * Smartparens
 #+begin_src emacs-lisp
