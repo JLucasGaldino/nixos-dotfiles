@@ -1,6 +1,6 @@
 #+TITLE: Lucas's Emacs config
 #+AUTHOR: Lucas Galdino
-j#+DESCRIPTION: My personal configuration
+#+DESCRIPTION: My personal configuration
 #+STARTUP: overview
 #+OPTIONS: toc:2
 
@@ -60,7 +60,8 @@ j#+DESCRIPTION: My personal configuration
     (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     :config
-    (evil-mode 1))
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-k") nil))
   (use-package evil-collection
     :ensure t
     :after evil
@@ -74,56 +75,57 @@ j#+DESCRIPTION: My personal configuration
 #+end_src
 * General's keybindings
 #+begin_src emacs-lisp
-    (use-package general
-      :ensure t
-      :demand t
-      :config
-      (general-evil-setup)
-      (general-create-definer lg/leader-keys
-        :states '(normal insert visual emacs)
-        :keymaps 'override
-        :prefix "SPC"
-        :global-prefix "M-SPC")
-      (lg/leader-keys
-        "b" '(:ignore t :wk "buffer")
-        "bs" '(switch-to-buffer :wk "Switch buffer")
-        "bk" '(kill-current-buffer :wk "Kill buffer")
-        "bn" '(next-buffer :wk "Next buffer")
-        "bp" '(previous-buffer :wk "Previous buffer")
-        "br" '(revert-buffer :wk "Reload buffer")
-        "." '(find-file :wk "Find file")
-        "c" '(:ignore t :wk "calculator")
-        "ca" '(calc :wk "Emacs Calc")
-        "cq" '(quick-calc :wk "Quick Calc")
-        "e" '(:ignore t :wk "Emacs config")
-        "er" '(lg/emacs-config-reload :wk "Emacs config reload")
-        "ee" '(lg/emacs-config-edit :wk "Emacs config edit")
-        "a" '(org-agenda :wk "Org agenda")
-        "m" '(:ignore t :wk "Modify Org heading")
-        "mt" '(org-todo :wk "Modify TODO keyword")
-        "mq" '(org-set-tags-command :wk "Modify tags")
-        "mp" '(org-priority :wk "Modify priority")
-        "h" '(:ignore t :wk "Helpful")
-        "hv" '(helpful-variable :wk "Helpful variable")
-        "hf" '(helpful-function :wk "Helpful function")
-        "hk" '(helpful-key :wk "Helpful key")
-        "t" '(:ignore t :wk "Timer")
-        "ts" '(org-timer-set-timer :wk "Timer set")
-        "w" '(:ignore t :wk "Window")
-        "wv" '(evil-window-vsplit :wk "Window split vertically")
-        "ws" '(evil-window-split :wk "Window split horizontally")
-        "wq" '(evil-window-delete :wk "Window delete")
-        "wh" '(evil-window-left :wk "Window go to left")
-        "wj" '(evil-window-down :wk "Window go to bottom")
-        "wk" '(evil-window-up :wk "Window go to top")
-        "wl" '(evil-window-right :wk "Window go to right")
-        "s" '(:ignore t :wk "Tabspaces")
-        "ss" '(tabspaces-switch-or-create-workspace :wk "Switch workspace")
-        "sr" '(tab-bar-rename-tab-by-name :wk "Rename workspace")
-        "sq" '(tabspaces-close-workspace :wk "Close workspace")
-        "n" '(:ignore t :wk "Roam nodes")
-        "nf" '(org-roam-node-find :wk "Find node")
-        "g" '(magit-status :wk "Magit")))
+  (use-package general
+    :ensure t
+    :demand t
+    :config
+    (general-evil-setup)
+    (general-create-definer lg/leader-keys
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC"
+      :global-prefix "M-SPC")
+    (lg/leader-keys
+      "b" '(:ignore t :wk "buffer")
+      "bs" '(switch-to-buffer :wk "Switch buffer")
+      "bk" '(kill-current-buffer :wk "Kill buffer")
+      "bn" '(next-buffer :wk "Next buffer")
+      "bp" '(previous-buffer :wk "Previous buffer")
+      "br" '(revert-buffer :wk "Reload buffer")
+      "." '(find-file :wk "Find file")
+      "c" '(:ignore t :wk "calculator")
+      "ca" '(calc :wk "Emacs Calc")
+      "cq" '(quick-calc :wk "Quick Calc")
+      "e" '(:ignore t :wk "Emacs config")
+      "er" '(lg/emacs-config-reload :wk "Emacs config reload")
+      "ee" '(lg/emacs-config-edit :wk "Emacs config edit")
+      "a" '(org-agenda :wk "Org agenda")
+      "m" '(:ignore t :wk "Modify Org heading")
+      "mt" '(org-todo :wk "Modify TODO keyword")
+      "mq" '(org-set-tags-command :wk "Modify tags")
+      "mp" '(org-priority :wk "Modify priority")
+      "h" '(:ignore t :wk "Helpful")
+      "hv" '(helpful-variable :wk "Helpful variable")
+      "hf" '(helpful-function :wk "Helpful function")
+      "hk" '(helpful-key :wk "Helpful key")
+      "t" '(:ignore t :wk "Timer")
+      "ts" '(org-timer-set-timer :wk "Timer set")
+      "w" '(:ignore t :wk "Window")
+      "wv" '(evil-window-vsplit :wk "Window split vertically")
+      "ws" '(evil-window-split :wk "Window split horizontally")
+      "wq" '(evil-window-delete :wk "Window delete")
+      "wh" '(evil-window-left :wk "Window go to left")
+      "wj" '(evil-window-down :wk "Window go to bottom")
+      "wk" '(evil-window-up :wk "Window go to top")
+      "wl" '(evil-window-right :wk "Window go to right")
+      "s" '(:ignore t :wk "Tabspaces")
+      "ss" '(tabspaces-switch-or-create-workspace :wk "Switch workspace")
+      "sr" '(tab-bar-rename-tab-by-name :wk "Rename workspace")
+      "sq" '(tabspaces-close-workspace :wk "Close workspace")
+      "n" '(:ignore t :wk "Roam nodes")
+      "nf" '(org-roam-node-find :wk "Find node")
+      "g" '(magit-status :wk "Magit")
+      "p" '(org-capture :wk "Capture")))
 #+end_src
 * Which-key
 #+begin_src emacs-lisp
@@ -142,6 +144,10 @@ j#+DESCRIPTION: My personal configuration
     :config
     (when (fboundp 'shortdoc-function-groups)
       (declare-function shortdoc-function-groups "shortdoc")))
+#+end_src
+* Emacs yes-no
+#+begin_src emacs-lisp
+(setopt use-short-answers t)
 #+end_src
 * Managing the Emacs config
 ** Reload config
@@ -308,7 +314,7 @@ j#+DESCRIPTION: My personal configuration
   (use-package tempel
     :ensure t
     :demand t
-    :bind ("TAB" . tempel-expand)
+    :bind ("M-TAB" . tempel-expand)
     :init
     (defun tempel-setup-capf ()
       ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
@@ -377,6 +383,13 @@ j#+DESCRIPTION: My personal configuration
   (use-package corfu
     :ensure t
     :demand t
+    :bind
+    (:map corfu-map
+  	("C-j" . corfu-next)
+  	("C-k" . corfu-previous)
+  	("TAB" . corfu-insert))
+    :custom
+    (corfu-cycle t)
     :init
     (global-corfu-mode)
     :config
@@ -441,7 +454,17 @@ j#+DESCRIPTION: My personal configuration
       (image-forward-hscroll 10))
     (defun lg/pdf-scroll-left ()
       (interactive)
-      (image-backward-hscroll 10)))
+      (image-backward-hscroll 10))
+
+
+    (add-hook 'pdf-view-mode-hook
+      (lambda ()
+        ;; Define SPC as a prefix key
+        (define-prefix-command 'pdf-view-leader-map)
+        (local-set-key (kbd "SPC") 'pdf-view-leader-map)
+        
+        (define-prefix-command 'pdf-view-leader-dot-map)
+        (define-key pdf-view-leader-map (kbd ".") #'find-file))))
 #+end_src
 * Magit
 #+begin_src emacs-lisp
@@ -471,6 +494,13 @@ j#+DESCRIPTION: My personal configuration
   (require 'epa)
   (setq epa-pinentry-mode 'loopback)
   (setq epa-file-cache-passphrase-for-symmetric-encryption nil)
+#+end_src
+* Calendar
+#+begin_src emacs-lisp
+  (with-eval-after-load 'general
+    (general-define-key
+     :keymaps 'calendar-mode-map
+     "h" #'calendar-backward-day))
 #+end_src
 * Org-mode
 ** Org fonts
@@ -625,6 +655,48 @@ j#+DESCRIPTION: My personal configuration
           org-roam-ui-update-on-save t))
 
 #+end_src
+** Capture
+#+begin_src emacs-lisp
+  (setq org-capture-templates
+        `(("i" "task inbox" entry (file+headline "~/org/agenda/todo.org" "inbox")
+           ,(concat "* todo %? \n"
+                    "/entered on/ %u"))
+          ("e" "event inbox" entry (file+headline "~/org/agenda/calendar.org" "once")
+           ,(concat "* evnt %? \n"
+                    "/entered on/ %u"))))
+#+end_src
+* Coding
+** Direnv
+#+begin_src emacs-lisp
+  (use-package direnv
+    :ensure t
+    :demand t
+    :config
+    (direnv-mode))
+#+end_src
+** Eglot
+#+begin_src emacs-lisp
+  (use-package eglot
+    :config
+    (add-to-list 'eglot-server-programs
+	       '(nix-mode . ("nixd")))
+    (setq eglot-autoshutdown t))
+
+#+end_src
+** Dumb-jump
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+    :ensure t
+    :demand t)
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+#+end_src
+** Nix
+#+begin_src emacs-lisp
+  (use-package nix-mode
+    :ensure t
+    :mode "\\.nix\\'")
+#+end_src
 * To implement
 - [X] setup libertinus font
 - [X] sophibos.io guide to beautify org mode
@@ -641,10 +713,11 @@ j#+DESCRIPTION: My personal configuration
 - [X] add pdftool bindings
 - [X] tempel completions
 - [X] tabbar workspaces
-- [ ] eglot for my selected languages
-- [ ] fix calendar bindings
-- magit
-- setup S-M or S-C bindings
-- task capture templates
-- dumb-jump
+- [X] fix calendar bindings
+- [X] magit work
+- [X] task capture templates
+- [X] direnv
+- [X] language modes
+- [X] eglot for my selected languages
+- [ ] dumb-jump
 - (maybe later) minions for moodline
